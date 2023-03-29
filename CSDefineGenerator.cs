@@ -21,8 +21,10 @@ namespace excel2json
 
         string mCode;
 
-        public string code {
-            get {
+        public string code
+        {
+            get
+            {
                 return this.mCode;
             }
         }
@@ -34,18 +36,25 @@ namespace excel2json
             sb.AppendLine("//");
             sb.AppendLine("// Auto Generated Code By excel2json");
             sb.AppendLine("// https://neil3d.gitee.io/coding/excel2json.html");
-            sb.AppendLine("// 1. 每个 Sheet 形成一个 Struct 定义, Sheet 的名称作为 Struct 的名称");
+            sb.AppendLine("// 1. 只生成第一个 Sheet 对应的表");
             sb.AppendLine("// 2. 表格约定：第一行是变量名称，第二行是变量类型");
+            sb.AppendLine("//");
             sb.AppendLine();
             sb.AppendFormat("// Generate From {0}.xlsx", excelName);
             sb.AppendLine();
             sb.AppendLine();
 
-            for (int i = 0; i < excel.Sheets.Count; i++)
+            if (excel.Sheets.Count > 0)
             {
-                DataTable sheet = excel.Sheets[i];
-                sb.Append(_exportSheet(sheet, excludePrefix));
+                DataTable sheet = excel.Sheets[0];
+                sb.Append(_exportSheet(sheet, excelName, excludePrefix));
             }
+
+            //for (int i = 0; i < excel.Sheets.Count; i++)
+            //{
+            //    DataTable sheet = excel.Sheets[i];
+            //    sb.Append(_exportSheet(sheet, excludePrefix));
+            //}
 
             sb.AppendLine();
             sb.AppendLine("// End of Auto Generated Code");
@@ -53,13 +62,13 @@ namespace excel2json
             mCode = sb.ToString();
         }
 
-        private string _exportSheet(DataTable sheet, string excludePrefix)
+        private string _exportSheet(DataTable sheet, string excelName, string excludePrefix)
         {
             if (sheet.Columns.Count < 0 || sheet.Rows.Count < 2)
                 return "";
 
-            string sheetName = sheet.TableName;
-            if (excludePrefix.Length > 0 && sheetName.StartsWith(excludePrefix))
+            //string sheetName = sheet.TableName;
+            if (excludePrefix.Length > 0 && excelName.StartsWith(excludePrefix))
                 return "";
 
             // get field list
@@ -84,7 +93,7 @@ namespace excel2json
 
             // export as string
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("public class {0}\r\n{{", sheet.TableName);
+            sb.AppendFormat("public class {0}\r\n{{", excelName);
             sb.AppendLine();
 
             foreach (FieldDef field in fieldList)

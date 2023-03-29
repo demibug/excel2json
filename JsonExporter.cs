@@ -15,8 +15,10 @@ namespace excel2json
         string mContext = "";
         int mHeaderRows = 0;
 
-        public string context {
-            get {
+        public string context
+        {
+            get
+            {
                 return mContext;
             }
         }
@@ -25,22 +27,35 @@ namespace excel2json
         /// 构造函数：完成内部数据创建
         /// </summary>
         /// <param name="excel">ExcelLoader Object</param>
-        public JsonExporter(ExcelLoader excel, bool lowcase, bool exportArray, string dateFormat, bool forceSheetName, int headerRows, string excludePrefix, bool cellJson, bool allString)
+        public JsonExporter(ExcelLoader excel, bool lowcase, bool exportArray, string dateFormat, bool forceSheetName, int headerRows, string excludePrefix, bool cellJson, bool allString, string excelName)
         {
             mHeaderRows = headerRows - 1;
             List<DataTable> validSheets = new List<DataTable>();
-            for (int i = 0; i < excel.Sheets.Count; i++)
+            if (excel.Sheets.Count > 0)
             {
-                DataTable sheet = excel.Sheets[i];
+                DataTable sheet = excel.Sheets[0];
 
                 // 过滤掉包含特定前缀的表单
-                string sheetName = sheet.TableName;
-                if (excludePrefix.Length > 0 && sheetName.StartsWith(excludePrefix))
-                    continue;
+                if (excludePrefix.Length > 0 && excelName.StartsWith(excludePrefix))
+                {
+                    // do nothing
+                }
 
                 if (sheet.Columns.Count > 0 && sheet.Rows.Count > 0)
                     validSheets.Add(sheet);
             }
+
+            //for (int i = 0; i < excel.Sheets.Count; i++)
+            //{
+            //    DataTable sheet = excel.Sheets[i];
+
+            //    // 过滤掉包含特定前缀的表单
+            //    if (excludePrefix.Length > 0 && sheetName.StartsWith(excludePrefix))
+            //        continue;
+
+            //    if (sheet.Columns.Count > 0 && sheet.Rows.Count > 0)
+            //        validSheets.Add(sheet);
+            //}
 
             var jsonSettings = new JsonSerializerSettings
             {
@@ -63,7 +78,7 @@ namespace excel2json
                 foreach (var sheet in validSheets)
                 {
                     object sheetValue = convertSheet(sheet, exportArray, lowcase, excludePrefix, cellJson, allString);
-                    data.Add(sheet.TableName, sheetValue);
+                    data.Add(excelName, sheetValue);
                 }
 
                 //-- convert to json string

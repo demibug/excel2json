@@ -17,12 +17,15 @@ namespace excel2json.GUI
         // 导出数据
         private JsonExporter mJson;
         private CSDefineGenerator mCSharp;
+        private CSTableGenerator mCSTable;
 
         /// <summary>
         /// 导出的Json文本
         /// </summary>
-        public string JsonContext {
-            get {
+        public string JsonContext
+        {
+            get
+            {
                 if (mJson != null)
                     return mJson.context;
                 else
@@ -30,12 +33,24 @@ namespace excel2json.GUI
             }
         }
 
-        public string CSharpCode {
-            get {
+        public string CSharpCode
+        {
+            get
+            {
                 if (mCSharp != null)
                     return mCSharp.code;
                 else
                     return "";
+            }
+        }
+
+        public string CSTableCode
+        {
+            get
+            {
+                if (mCSTable != null)
+                    return mCSTable.code;
+                else return "";
             }
         }
 
@@ -55,6 +70,12 @@ namespace excel2json.GUI
         {
             if (mCSharp != null)
                 mCSharp.SaveToFile(filePath, mEncoding);
+        }
+
+        public void saveCSTable(string filePath)
+        {
+            if (mCSTable != null)
+                mCSTable.SaveToFile(filePath, mEncoding);
         }
 
 
@@ -94,9 +115,10 @@ namespace excel2json.GUI
 
             //-- C# 结构体定义
             mCSharp = new CSDefineGenerator(excelPath, excel, options.ExcludePrefix);
+            mCSTable = new CSTableGenerator(excelPath, excel, options.ExcludePrefix);
 
             //-- 导出JSON
-            mJson = new JsonExporter(excel, options.Lowcase, options.ExportArray, options.DateFormat, options.ForceSheetName, header, options.ExcludePrefix, options.CellJson, options.AllString);
+            mJson = new JsonExporter(excel, options.Lowcase, options.ExportArray, options.DateFormat, options.ForceSheetName, header, options.ExcludePrefix, options.CellJson, options.AllString, excelPath);
         }
     }
 }

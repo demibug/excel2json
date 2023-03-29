@@ -106,7 +106,7 @@ namespace excel2json
             ExcelLoader excel = new ExcelLoader(excelPath, header);
 
             //-- export
-            JsonExporter exporter = new JsonExporter(excel, options.Lowcase, options.ExportArray, dateFormat, options.ForceSheetName, header, options.ExcludePrefix, options.CellJson, options.AllString);
+            JsonExporter exporter = new JsonExporter(excel, options.Lowcase, options.ExportArray, dateFormat, options.ForceSheetName, header, options.ExcludePrefix, options.CellJson, options.AllString, excelPath);
             exporter.SaveToFile(exportPath, cd);
 
             //-- 生成C#定义文件
@@ -114,6 +114,12 @@ namespace excel2json
             {
                 CSDefineGenerator generator = new CSDefineGenerator(excelName, excel, options.ExcludePrefix);
                 generator.SaveToFile(options.CSharpPath, cd);
+            }
+
+            if (options.CSTablePath != null && options.CSTablePath.Length > 0)
+            {
+                CSTableGenerator generator = new CSTableGenerator(excelName, excel, options.ExcludePrefix);
+                generator.SaveToFile(options.CSTablePath, cd);
             }
         }
     }
