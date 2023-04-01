@@ -105,10 +105,13 @@ namespace excel2json
             //-- Load Excel
             ExcelLoader excel = new ExcelLoader(excelPath, header);
 
+
             //-- export
+            options.AllString = false;
+            options.CellJson = true;
             JsonExporter exporter = new JsonExporter(excel, options.Lowcase, options.ExportArray, dateFormat, options.ForceSheetName, header, options.ExcludePrefix, options.CellJson, options.AllString, excelPath);
             exporter.SaveToFile(exportPath, cd);
-
+            Console.WriteLine("all string: " + options.AllString + " options.CellJson:" + options.CellJson);
             //-- 生成C#定义文件
             if (options.CSharpPath != null && options.CSharpPath.Length > 0)
             {

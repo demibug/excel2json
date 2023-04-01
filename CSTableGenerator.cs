@@ -117,7 +117,7 @@ namespace excel2json
             sb.Append("\t{\r\n");
             sb.AppendFormat("\t\tif (m_config.TryGetValue(id, out {0} config))\r\n", excelName);
             sb.Append("\t\t{\r\n");
-            sb.Append("\t\treturn config;\r\n");
+            sb.Append("\t\t\treturn config;\r\n");
             sb.Append("\t\t}\r\n");
             sb.AppendLine();
             sb.Append("\t\treturn null;\r\n");
