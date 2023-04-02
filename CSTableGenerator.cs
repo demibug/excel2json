@@ -37,7 +37,7 @@ namespace excel2json
             sb.AppendLine("// Auto Generated Code By excel2json");
             sb.AppendLine("// https://neil3d.gitee.io/coding/excel2json.html");
             sb.AppendLine("// 1. 每张表生成一个 Table");
-            sb.AppendLine("// 2. 这个 class 是 partial 的,在 ConfigTableExtends 文件夹内扩展");
+            sb.AppendLine("// 2. 配置类是 partial 的，可以在 ConfigTableExt 文件夹内扩展 ConvertID 函数以便于遍历配置表时生成自己所需的配置");
             sb.AppendLine("//");
             sb.AppendLine();
             sb.AppendFormat("// Generate From {0}.xlsx", excelName);
@@ -94,7 +94,7 @@ namespace excel2json
             // export as string
             StringBuilder sb = new StringBuilder();
             sb.Append("using System.Collections.Generic;\r\nusing WEngine.Runtime;\r\n");
-            sb.AppendFormat("public partial class {0}Table\r\n{{", excelName);
+            sb.AppendFormat("public partial class {0}Table : {1}TableBase\r\n{{", excelName, excelName);
             sb.AppendLine();
 
             sb.AppendFormat("\tprivate ResDictionary<int, {0}> m_config = null;\r\n", excelName);
@@ -103,12 +103,6 @@ namespace excel2json
             sb.Append("\t{\r\n");
             sb.AppendFormat("\t\tm_config = new ResDictionary<int, {0}>();\r\n", excelName);
             sb.AppendFormat("\t\tm_config.Init(\"{0}\", ConvertID);\r\n", excelName);
-            sb.Append("\t}\r\n");
-            sb.AppendLine();
-
-            sb.AppendFormat("\tprivate int ConvertID({0} config)\r\n", excelName);
-            sb.Append("\t{\r\n");
-            sb.Append("\t\treturn config.ID;\r\n");
             sb.Append("\t}\r\n");
             sb.AppendLine();
 
@@ -131,6 +125,17 @@ namespace excel2json
             sb.Append("\t}\r\n");
 
             sb.Append("}\r\n");
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.Append("// 配置基类\r\n");
+            sb.AppendFormat("public partial class {0}TableBase\r\n{{", excelName);
+            sb.AppendFormat("\tprotected int ConvertID({0} config)\r\n", excelName);
+            sb.Append("\t{\r\n");
+            sb.Append("\t\treturn config.ID;\r\n");
+            sb.Append("\t}\r\n");
+            sb.Append("}\r\n");
+            sb.AppendLine();
+
             return sb.ToString();
         }
 
