@@ -36,7 +36,7 @@ namespace excel2json
             sb.AppendLine("//");
             sb.AppendLine("// Auto Generated Code By excel2json");
             sb.AppendLine("// https://neil3d.gitee.io/coding/excel2json.html");
-            sb.AppendLine("// 1. 每张表生成一个 Table");
+            sb.AppendLine("// 1. 每张表生成一个 Table, 数据的读取在构造函数内");
             sb.AppendLine("// 2. 配置类是 partial 的，可以在 ConfigTableExt 文件夹内扩展 ConvertID 函数以便于遍历配置表时生成自己所需的配置");
             sb.AppendLine("//");
             sb.AppendLine();
@@ -93,45 +93,54 @@ namespace excel2json
 
             // export as string
             StringBuilder sb = new StringBuilder();
-            sb.Append("using System.Collections.Generic;\r\nusing WEngine.Runtime;\r\n");
-            sb.AppendFormat("public partial class {0}Table : {1}TableBase\r\n{{", excelName, excelName);
+            sb.Append("using System.Collections.Generic;\r\nusing WEngine.Runtime;\r\n\r\n");
+            sb.Append("namespace ConfigTableData\r\n");
+            sb.Append("{\r\n");
+            sb.AppendFormat("\tpublic partial class {0}Table : {1}TableBase\r\n", excelName, excelName);
+            sb.Append("\t{\r\n");
             sb.AppendLine();
 
-            sb.AppendFormat("\tprivate ResDictionary<int, {0}> m_config = null;\r\n", excelName);
+            sb.AppendFormat("\t\tprivate ResDictionary<int, {0}> m_config = null;\r\n", excelName);
             sb.AppendLine();
-            sb.AppendFormat("\tpublic {0}Table()\r\n", excelName);
-            sb.Append("\t{\r\n");
-            sb.AppendFormat("\t\tm_config = new ResDictionary<int, {0}>();\r\n", excelName);
-            sb.AppendFormat("\t\tm_config.Init(\"{0}\", ConvertID);\r\n", excelName);
-            sb.Append("\t}\r\n");
-            sb.AppendLine();
-
-            sb.Append("\t// 根据ID获取配置\r\n");
-            sb.AppendFormat("\tpublic {0} GetConfig(int id)\r\n", excelName);
-            sb.Append("\t{\r\n");
-            sb.AppendFormat("\t\tif (m_config.TryGetValue(id, out {0} config))\r\n", excelName);
+            sb.AppendFormat("\t\tpublic {0}Table()\r\n", excelName);
             sb.Append("\t\t{\r\n");
-            sb.Append("\t\t\treturn config;\r\n");
+            sb.AppendFormat("\t\t\tm_config = new ResDictionary<int, {0}>();\r\n", excelName);
+            sb.AppendFormat("\t\t\tm_config.Init(\"{0}\", ConvertID);\r\n", excelName);
+            sb.Append("\t\t\t//check load\r\n");
+            sb.Append("\t\t\tif (m_config.Data == null)\r\n");
+            sb.Append("\t\t\t{\r\n");
+            sb.AppendFormat("\t\t\t\tWLogger.LogError(\"{0} error: Data is null.\");\r\n", excelName);
+            sb.Append("\t\t\t}\r\n");
             sb.Append("\t\t}\r\n");
             sb.AppendLine();
-            sb.Append("\t\treturn null;\r\n");
-            sb.Append("\t}\r\n");
+
+            sb.Append("\t\t// 根据ID获取配置\r\n");
+            sb.AppendFormat("\t\tpublic {0} GetConfig(int id)\r\n", excelName);
+            sb.Append("\t\t{\r\n");
+            sb.AppendFormat("\t\t\tif (m_config.TryGetValue(id, out {0} config))\r\n", excelName);
+            sb.Append("\t\t\t{\r\n");
+            sb.Append("\t\t\t\treturn config;\r\n");
+            sb.Append("\t\t\t}\r\n");
+            sb.AppendLine();
+            sb.Append("\t\t\treturn null;\r\n");
+            sb.Append("\t\t}\r\n");
             sb.AppendLine();
 
-            sb.Append("\t// 获取当前表所有数据\r\n");
-            sb.AppendFormat("\tpublic Dictionary<int, {0}> GetAllConfigs()\r\n", excelName);
-            sb.Append("\t{\r\n");
-            sb.Append("\t\treturn m_config.Data;\r\n");
-            sb.Append("\t}\r\n");
+            sb.Append("\t\t// 获取当前表所有数据\r\n");
+            sb.AppendFormat("\t\tpublic Dictionary<int, {0}> GetAllConfigs()\r\n", excelName);
+            sb.Append("\t\t{\r\n");
+            sb.Append("\t\t\treturn m_config.Data;\r\n");
+            sb.Append("\t\t}\r\n");
 
-            sb.Append("}\r\n");
+            sb.Append("\t}\r\n");
             sb.AppendLine();
             sb.AppendLine();
-            sb.Append("// 配置基类\r\n");
-            sb.AppendFormat("public partial class {0}TableBase\r\n{{", excelName);
-            sb.AppendFormat("\tprotected int ConvertID({0} config)\r\n", excelName);
-            sb.Append("\t{\r\n");
-            sb.Append("\t\treturn config.ID;\r\n");
+            sb.Append("\t// 配置基类\r\n");
+            sb.AppendFormat("\tpublic class {0}TableBase\r\n{{", excelName);
+            sb.AppendFormat("\t\tprotected int ConvertID({0} config)\r\n", excelName);
+            sb.Append("\t\t{\r\n");
+            sb.Append("\t\t\treturn config.ID;\r\n");
+            sb.Append("\t\t}\r\n");
             sb.Append("\t}\r\n");
             sb.Append("}\r\n");
             sb.AppendLine();
