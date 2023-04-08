@@ -94,7 +94,7 @@ namespace excel2json
             // export as string
             StringBuilder sb = new StringBuilder();
             sb.Append("using System.Collections.Generic;\r\nusing WEngine.Runtime;\r\n\r\n");
-            sb.Append("namespace ConfigTableData\r\n");
+            sb.Append("namespace ConfigTableType\r\n");
             sb.Append("{\r\n");
             sb.AppendFormat("\tpublic partial class {0}Table : {1}TableBase\r\n", excelName, excelName);
             sb.Append("\t{\r\n");
